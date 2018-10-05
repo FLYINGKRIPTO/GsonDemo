@@ -38,6 +38,17 @@ public class MainActivity extends AppCompatActivity {
 
 	    Employee employee = getEmployeeObject();
 
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+
+        // Serialization
+        Gson gson = new Gson();
+        String jsonStr = gson.toJson(employee, Employee.class);
+        Log.i(TAG + " SAVE", jsonStr);
+
+        prefsEditor.putString("employee_key", jsonStr);
+        prefsEditor.apply();
+
 	}
 
 	public void loadObjectType(View view) {
@@ -84,6 +95,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
 	public void loadGenericType(View view) {
+	    if(view==null)
+        {
+            return;
+        }
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        String jsonString = sharedPreferences.getString("foo_key","N/A");
+        Log.i(TAG,jsonString);
+
+        //Deserialization
+        Gson gson = new Gson();
+        Type type = new TypeToken<Foo<Employee>>(){}.getType();
+        Foo<Employee> employeeFoo = gson.fromJson(jsonString,type);
+        Employee employee = employeeFoo.getObject();
+        displayText(employee);
 
 	}
 	private Employee getEmployeeObject(){
