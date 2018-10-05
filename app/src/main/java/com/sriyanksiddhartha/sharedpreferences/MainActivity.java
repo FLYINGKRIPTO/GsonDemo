@@ -9,7 +9,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 /**
@@ -35,15 +37,6 @@ public class MainActivity extends AppCompatActivity {
 	public void saveObjectType(View view) {
 
 	    Employee employee = getEmployeeObject();
-		SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		//Serialization by GSON Library
-		Gson gson = new Gson();
-		String jsonString = gson.toJson(employee,Employee.class);
-        Log.i(TAG, jsonString);
-
-        editor.putString("employee_key",jsonString);
-        editor.apply();
 
 	}
 
@@ -74,8 +67,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveGenericType(View view) {
+         Employee employee = getEmployeeObject();
+         Foo<Employee> foo = new Foo<>();
+         foo.setObject(employee);
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        //Serialization by GSON Library
+        Gson gson = new Gson();
+        Type type = new TypeToken<Foo<Employee>>(){}.getType();
+        String jsonString = gson.toJson(foo,type);
+        Log.i(TAG, jsonString);
 
-	}
+        editor.putString("foo_key",jsonString);
+        editor.apply();
+
+    }
 
 	public void loadGenericType(View view) {
 
